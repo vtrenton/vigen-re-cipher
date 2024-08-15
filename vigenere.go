@@ -33,7 +33,7 @@ func main() {
 		key = os.Args[3]
 	} else {
 		// default values
-		input = "Please enter 1 a string to shift and 2 a key to apply"
+		input = "Please enter 1 a mode 2  string to shift and 3 a key to apply"
 		key = "a"
 	}
 
@@ -95,8 +95,8 @@ func apply_shift(input string, rb RingBuffer) {
 	//(plaintext letter + shift letter - 'a') % MAXLEN
 	for i, c := range input {
 		currkey := rb.shiftmap[i%len(rb.shiftmap)]
-		combo := c + currkey - checkcase(c)
-		encoded := int(combo) % MAXLEN
-		fmt.Printf("%s", encoded)
+		combo := c + currkey
+		encoded := int(combo)%MAXLEN + int(checkcase(c))
+		fmt.Printf("%c\n", rune(encoded))
 	}
 }
