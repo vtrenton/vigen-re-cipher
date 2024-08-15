@@ -20,9 +20,6 @@ func main() {
 	var input string
 	var key string
 
-	// initialize shift buffer
-	var rb RingBuffer
-
 	if len(os.Args) == 4 {
 		// raw dogging it! taking stdin directly from args with no bounds checking
 		// hack me bro!
@@ -38,13 +35,20 @@ func main() {
 		key = "a"
 	}
 
-	rb = populatebuff(rb)
-	shiftmap := get_shiftmap(key, mode, rb)
+	shiftmap := get_shiftmap(key, mode)
 
-	fmt.Println(string(apply_shift(input, rb, shiftmap)))
+	fmt.Println(string(apply_shift(input, shiftmap)))
 }
 
-func checkcase(input rune, rb RingBuffer) [MAXLEN]rune {
+func checkcase(input rune) [MAXLEN]rune {
+	// this is realistically the only function that needs access to the RingBuffer
+	// Lets initialize it here
+	// even though we'll be reinitializing on each call
+	// this struct is just 2 arrays (sequential so not a slice)
+	// minimal overhead
+	var rb RingBuffer
+	rb = populatebuff(rb)
+
 	if input >= 'a' && input <= 'z' {
 		// lowercase
 		return rb.lower
@@ -62,13 +66,11 @@ func checkcase(input rune, rb RingBuffer) [MAXLEN]rune {
 	}
 }
 
-// TODO: I hate passing in rb just because checkcase needs it
-// There needs to be a better way to approach this.
-func get_shiftmap(key string, mode string, rb RingBuffer) []rune {
+func get_shiftmap(key string, mode string) []rune {
 	// create a slice containing alphabetical diff from a
 	var shiftmap []rune
 	for _, char := range key {
-		base := checkcase(char, rb)
+		base := checkcase(char)
 		if base[0] == 0 {
 			// not a char
 			// skip iteration
@@ -100,7 +102,7 @@ func populatebuff(rb RingBuffer) RingBuffer {
 	}
 }
 
-func apply_shift(input string, rb RingBuffer, shiftmap []rune) []rune {
+func apply_shift(input string, shiftmap []rune) []rune {
 	var output []rune
 	var ulcase [MAXLEN]rune
 
@@ -112,7 +114,7 @@ func apply_shift(input string, rb RingBuffer, shiftmap []rune) []rune {
 	for _, c := range input {
 		currkey := shiftmap[ind%len(shiftmap)]
 		ind++
-		ulcase = checkcase(c, rb)
+		ulcase = checkcase(c)
 		if ulcase[0] == 0 {
 			// Not a letter
 			output = append(output, c)
