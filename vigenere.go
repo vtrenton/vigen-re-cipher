@@ -29,11 +29,15 @@ func main() {
 		// raw dogging it! taking stdin directly from args with no bounds checking
 		// hack me bro!
 		mode = os.Args[1]
+		// TODO its better to read from a file than an arg with vigenere ciphers
+		// so input should be read from a file.
 		input = os.Args[2]
 		key = os.Args[3]
 	} else {
 		// default values
-		input = "Please enter 1 a mode 2  string to shift and 3 a key to apply"
+		//fmt.Println("reached")
+		mode = "encode"
+		input = "Please enter 1 a mode 2 string to shift and 3 a key to apply"
 		key = "a"
 	}
 
@@ -94,6 +98,14 @@ func popbuff(rb RingBuffer, shiftmap []rune) RingBuffer {
 }
 
 func apply_shift(input string, rb RingBuffer) {
+	//DEBUG
+	fmt.Println("in apply_shift")
+	fmt.Printf("input is %s\n", input)
+	fmt.Println("rb.shiftmap is")
+	for _, x := range rb.shiftmap {
+		fmt.Printf("%d\n", x)
+	}
+
 	// create output buffer
 	var output []rune
 	var ulcase [MAXLEN]rune
@@ -121,7 +133,7 @@ func apply_shift(input string, rb RingBuffer) {
 			ind--
 			continue
 		}
-		combo := ulcase[int(c+currkey-'a')%MAXLEN]
+		combo := ulcase[int(c+currkey-checkcase(c))%MAXLEN]
 
 		// add to output
 		output = append(output, combo)
