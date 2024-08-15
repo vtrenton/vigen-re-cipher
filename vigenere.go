@@ -5,7 +5,6 @@ import (
 	"os"
 )
 
-// lets use a RingBuffer since this is a shiftcipher
 const MAXLEN int = 26
 
 type RingBuffer struct {
@@ -35,14 +34,13 @@ func main() {
 		key = os.Args[3]
 	} else {
 		// default values
-		//fmt.Println("reached")
 		mode = "encode"
 		input = "Please enter 1 a mode 2 string to shift and 3 a key to apply"
 		key = "a"
 	}
 
 	shiftmap := get_shiftmap(key, mode)
-	rb = popbuff(rb, shiftmap)
+	rb = populatebuff(rb, shiftmap)
 
 	fmt.Println(string(apply_shift(input, rb)))
 }
@@ -81,7 +79,7 @@ func get_shiftmap(key string, mode string) []rune {
 }
 
 // populate shift buffer
-func popbuff(rb RingBuffer, shiftmap []rune) RingBuffer {
+func populatebuff(rb RingBuffer, shiftmap []rune) RingBuffer {
 	for i := 0; i < MAXLEN; i++ {
 		rb.lower[i] = rune('a' + i)
 	}
@@ -98,7 +96,6 @@ func popbuff(rb RingBuffer, shiftmap []rune) RingBuffer {
 }
 
 func apply_shift(input string, rb RingBuffer) []rune {
-	// create output buffer
 	var output []rune
 	var ulcase [MAXLEN]rune
 
@@ -119,16 +116,19 @@ func apply_shift(input string, rb RingBuffer) []rune {
 			ulcase = rb.upper
 		} else {
 			// Not a letter
-			// write the char directly and end current iteration
 			output = append(output, c)
-			// decrement the index
 			ind--
 			continue
 		}
-		combo := ulcase[int(c+currkey-checkcase(c))%MAXLEN]
+		outind := int(c+currkey-checkcase(c)) % MAXLEN
+		// in the case of decode we need to add back MAXLEN
+		// So we don't have a negative index
+		if outind < 0 {
+			outind = outind + MAXLEN
+		}
+		outchar := ulcase[outind]
 
-		// add to output
-		output = append(output, combo)
+		output = append(output, outchar)
 	}
 	return output
 }
