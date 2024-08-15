@@ -15,7 +15,7 @@ type RingBuffer struct {
 
 func main() {
 	// arg vars
-	var input string
+	//var input string
 	var key string
 
 	// initialize shift buffer
@@ -25,15 +25,18 @@ func main() {
 	if len(os.Args) == 3 {
 		// raw dogging it! taking stdin directly from args with no bounds checking
 		// hack me bro!
-		input = os.Args[1]
+		//input = os.Args[1]
 		key = os.Args[2]
 	} else {
 		// default values
-		input = "Please enter 1 a string to shift and 2 a key to apply"
+		//input = "Please enter 1 a string to shift and 2 a key to apply"
 		key = "a"
 	}
 
-	fmt.Println("This is where the output will go")
+	shiftarr := get_shiftmap(key)
+	for _, x := range shiftarr {
+		fmt.Printf("%d\n", x)
+	}
 }
 
 // populate shift buffer
@@ -52,9 +55,25 @@ func popbuff(rb RingBuffer) RingBuffer {
 	}
 }
 
-func get_keymap(key string) []int {
-	// get len of key in runes
+func get_shiftmap(key string) []int {
 	// create a slice containing alphabetical diff from a
-	// ascii can help here
-	// return a slice of integers.
+	var shiftmap []int
+	for _, char := range key {
+		shiftmap = append(shiftmap, int(char-checkcase(char)))
+	}
+	return shiftmap
+}
+
+func checkcase(input rune) rune {
+	if input >= 'a' && input <= 'z' {
+		// lowercase
+		return 'a'
+	} else if input >= 'A' && input <= 'Z' {
+		// uppercase
+		return 'A'
+	} else {
+		// not a number
+		// calling function should subtract itself so the shift is 0
+		return input
+	}
 }
