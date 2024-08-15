@@ -8,9 +8,8 @@ import (
 const MAXLEN int = 26
 
 type RingBuffer struct {
-	lower    [MAXLEN]rune
-	upper    [MAXLEN]rune
-	shiftmap []rune
+	lower [MAXLEN]rune
+	upper [MAXLEN]rune
 }
 
 func main() {
@@ -39,36 +38,43 @@ func main() {
 		key = "a"
 	}
 
-	shiftmap := get_shiftmap(key, mode)
-	rb = populatebuff(rb, shiftmap)
+	rb = populatebuff(rb)
+	shiftmap := get_shiftmap(key, mode, rb)
 
-	fmt.Println(string(apply_shift(input, rb)))
+	fmt.Println(string(apply_shift(input, rb, shiftmap)))
 }
 
-func checkcase(input rune) rune {
+func checkcase(input rune, rb RingBuffer) [MAXLEN]rune {
 	if input >= 'a' && input <= 'z' {
 		// lowercase
-		return 'a'
+		return rb.lower
 	} else if input >= 'A' && input <= 'Z' {
 		// uppercase
-		return 'A'
+		return rb.upper
 	} else {
-		// not a number
-		return 0
+		// not a char
+		// populate with zeros to signal to upstream that
+		var notchar [MAXLEN]rune
+		for i := range MAXLEN {
+			notchar[i] = 0
+		}
+		return notchar
 	}
 }
 
-func get_shiftmap(key string, mode string) []rune {
+// TODO: I hate passing in rb just because checkcase needs it
+// There needs to be a better way to approach this.
+func get_shiftmap(key string, mode string, rb RingBuffer) []rune {
 	// create a slice containing alphabetical diff from a
 	var shiftmap []rune
 	for _, char := range key {
-		base := checkcase(char)
-		if base == 0 {
+		base := checkcase(char, rb)
+		if base[0] == 0 {
 			// not a char
 			// skip iteration
 			continue
 		}
-		shift := char - base
+		shift := char - base[0] // should be 'a' or 'A'
 		if mode == "decode" {
 			// add a negative number for decoding
 			shift = shift * -1
@@ -79,7 +85,7 @@ func get_shiftmap(key string, mode string) []rune {
 }
 
 // populate shift buffer
-func populatebuff(rb RingBuffer, shiftmap []rune) RingBuffer {
+func populatebuff(rb RingBuffer) RingBuffer {
 	for i := 0; i < MAXLEN; i++ {
 		rb.lower[i] = rune('a' + i)
 	}
@@ -89,13 +95,12 @@ func populatebuff(rb RingBuffer, shiftmap []rune) RingBuffer {
 	}
 
 	return RingBuffer{
-		lower:    rb.lower,
-		upper:    rb.upper,
-		shiftmap: shiftmap,
+		lower: rb.lower,
+		upper: rb.upper,
 	}
 }
 
-func apply_shift(input string, rb RingBuffer) []rune {
+func apply_shift(input string, rb RingBuffer, shiftmap []rune) []rune {
 	var output []rune
 	var ulcase [MAXLEN]rune
 
@@ -105,22 +110,16 @@ func apply_shift(input string, rb RingBuffer) []rune {
 	// but "Skip" special chars
 	var ind int
 	for _, c := range input {
-		currkey := rb.shiftmap[ind%len(rb.shiftmap)]
+		currkey := shiftmap[ind%len(shiftmap)]
 		ind++
-		// TODO figure out case
-		// this is a mess that rechecks case.
-		// need to find a more elegant DRY way to handle this
-		if checkcase(c) == 'a' {
-			ulcase = rb.lower
-		} else if checkcase(c) == 'A' {
-			ulcase = rb.upper
-		} else {
+		ulcase = checkcase(c, rb)
+		if ulcase[0] == 0 {
 			// Not a letter
 			output = append(output, c)
 			ind--
 			continue
 		}
-		outind := int(c+currkey-checkcase(c)) % MAXLEN
+		outind := int(c+currkey-ulcase[0]) % MAXLEN
 		// in the case of decode we need to add back MAXLEN
 		// So we don't have a negative index
 		if outind < 0 {
