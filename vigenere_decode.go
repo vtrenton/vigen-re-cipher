@@ -9,59 +9,41 @@ import (
 const MAXLEN int = 26
 
 type RingBuffer struct {
-	lower [MAXLEN]rune
-	upper [MAXLEN]rune
+	lower    [MAXLEN]rune
+	upper    [MAXLEN]rune
+	shiftmap []rune
 }
 
 func main() {
 	// arg vars
-	//var input string
+
+	// TODO: Enum for this!
+	var mode string
+	var input string
 	var key string
 
 	// initialize shift buffer
 	var rb RingBuffer
-	rb = popbuff(rb)
 
-	if len(os.Args) == 3 {
+	if len(os.Args) == 4 {
 		// raw dogging it! taking stdin directly from args with no bounds checking
 		// hack me bro!
-		//input = os.Args[1]
-		key = os.Args[2]
+		mode = os.Args[1]
+		input = os.Args[2]
+		key = os.Args[3]
 	} else {
 		// default values
-		//input = "Please enter 1 a string to shift and 2 a key to apply"
+		input = "Please enter 1 a string to shift and 2 a key to apply"
 		key = "a"
 	}
 
-	shiftarr := get_shiftmap(key)
-	for _, x := range shiftarr {
-		fmt.Printf("%d\n", x)
-	}
-}
+	shiftmap := get_shiftmap(key, mode)
+	rb = popbuff(rb, shiftmap)
 
-// populate shift buffer
-func popbuff(rb RingBuffer) RingBuffer {
-	for i := 0; i < MAXLEN; i++ {
-		rb.lower[i] = rune('a' + i)
-	}
-
-	for i := 0; i < MAXLEN; i++ {
-		rb.upper[i] = rune('A' + i)
-	}
-
-	return RingBuffer{
-		lower: rb.lower,
-		upper: rb.upper,
-	}
-}
-
-func get_shiftmap(key string) []int {
-	// create a slice containing alphabetical diff from a
-	var shiftmap []int
-	for _, char := range key {
-		shiftmap = append(shiftmap, int(char-checkcase(char)))
-	}
-	return shiftmap
+	apply_shift(input, rb)
+	//for _, x := range shiftmap {
+	//	fmt.Printf("%d\n", x)
+	//}
 }
 
 func checkcase(input rune) rune {
@@ -75,5 +57,46 @@ func checkcase(input rune) rune {
 		// not a number
 		// calling function should subtract itself so the shift is 0
 		return input
+	}
+}
+
+func get_shiftmap(key string, mode string) []rune {
+	// create a slice containing alphabetical diff from a
+	var shiftmap []rune
+	for _, char := range key {
+		shift := char - checkcase(char)
+		if mode == "decode" {
+			// add a negative number for decoding
+			shift = shift * -1
+		}
+		shiftmap = append(shiftmap, shift)
+	}
+	return shiftmap
+}
+
+// populate shift buffer
+func popbuff(rb RingBuffer, shiftmap []rune) RingBuffer {
+	for i := 0; i < MAXLEN; i++ {
+		rb.lower[i] = rune('a' + i)
+	}
+
+	for i := 0; i < MAXLEN; i++ {
+		rb.upper[i] = rune('A' + i)
+	}
+
+	return RingBuffer{
+		lower:    rb.lower,
+		upper:    rb.upper,
+		shiftmap: shiftmap,
+	}
+}
+
+func apply_shift(input string, rb RingBuffer) {
+	//(plaintext letter + shift letter - 'a') % MAXLEN
+	for i, c := range input {
+		currkey := rb.shiftmap[i%len(rb.shiftmap)]
+		combo := c + currkey - checkcase(c)
+		encoded := int(combo) % MAXLEN
+		fmt.Printf("%s", encoded)
 	}
 }
