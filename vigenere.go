@@ -44,7 +44,7 @@ func main() {
 	shiftmap := get_shiftmap(key, mode)
 	rb = popbuff(rb, shiftmap)
 
-	apply_shift(input, rb)
+	fmt.Println(string(apply_shift(input, rb)))
 }
 
 func checkcase(input rune) rune {
@@ -97,15 +97,7 @@ func popbuff(rb RingBuffer, shiftmap []rune) RingBuffer {
 	}
 }
 
-func apply_shift(input string, rb RingBuffer) {
-	//DEBUG
-	fmt.Println("in apply_shift")
-	fmt.Printf("input is %s\n", input)
-	fmt.Println("rb.shiftmap is")
-	for _, x := range rb.shiftmap {
-		fmt.Printf("%d\n", x)
-	}
-
+func apply_shift(input string, rb RingBuffer) []rune {
 	// create output buffer
 	var output []rune
 	var ulcase [MAXLEN]rune
@@ -138,5 +130,5 @@ func apply_shift(input string, rb RingBuffer) {
 		// add to output
 		output = append(output, combo)
 	}
-	fmt.Println(string(output))
+	return output
 }
