@@ -41,9 +41,6 @@ func main() {
 	rb = popbuff(rb, shiftmap)
 
 	apply_shift(input, rb)
-	//for _, x := range shiftmap {
-	//	fmt.Printf("%d\n", x)
-	//}
 }
 
 func checkcase(input rune) rune {
@@ -100,8 +97,15 @@ func apply_shift(input string, rb RingBuffer) {
 	// create output buffer
 	var output []rune
 	var ulcase [MAXLEN]rune
-	for i, c := range input {
-		currkey := rb.shiftmap[i%len(rb.shiftmap)]
+
+	// need to create local varible to track index of shiftmaps
+	// external of loop iterator for string
+	// this is because we want to increment the string by len
+	// but "Skip" special chars
+	var ind int
+	for _, c := range input {
+		currkey := rb.shiftmap[ind%len(rb.shiftmap)]
+		ind++
 		// TODO figure out case
 		// this is a mess that rechecks case.
 		// need to find a more elegant DRY way to handle this
@@ -113,6 +117,8 @@ func apply_shift(input string, rb RingBuffer) {
 			// Not a letter
 			// write the char directly and end current iteration
 			output = append(output, c)
+			// decrement the index
+			ind--
 			continue
 		}
 		combo := ulcase[int(c+currkey-'a')%MAXLEN]
