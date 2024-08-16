@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 )
@@ -12,32 +13,57 @@ type RingBuffer struct {
 	upper [MAXLEN]rune
 }
 
+// enum for mode Arg
+type Mode string
+
+const (
+	Encode Mode = "encode"
+	Decode Mode = "decode"
+)
+
 func main() {
 	// arg vars
-
-	// TODO: Enum for mode!
-	var mode string
+	var modeArg string
 	var input string
 	var key string
 
 	if len(os.Args) == 4 {
 		// raw dogging it! taking stdin directly from args with no bounds checking
 		// hack me bro!
-		mode = os.Args[1]
+		modeArg = os.Args[1]
 		// TODO its better to read from a file than an arg with vigenere ciphers
 		// so input should be read from a file.
 		input = os.Args[2]
 		key = os.Args[3]
 	} else {
 		// default values
-		mode = "encode"
+		modeArg = "encode"
 		input = "Please enter 1 a mode 2 string to shift and 3 a key to apply"
 		key = "a"
 	}
 
-	shiftmap := get_shiftmap(key, mode)
+	// validate mode input
+	mode, err := ParseMode(modeArg)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
-	fmt.Println(string(apply_shift(input, shiftmap)))
+	shiftmap := get_shiftmap(key, mode)
+	cipher_out := apply_shift(input, shiftmap)
+
+	fmt.Println(cipher_out)
+}
+
+func ParseMode(mode string) (Mode, error) {
+	switch mode {
+	case string(Encode):
+		return Encode, nil
+	case string(Decode):
+		return Decode, nil
+	default:
+		return "", errors.New("invalid mode: must be 'encode' or 'decode'")
+	}
 }
 
 func checkcase(input rune) [MAXLEN]rune {
@@ -66,7 +92,7 @@ func checkcase(input rune) [MAXLEN]rune {
 	}
 }
 
-func get_shiftmap(key string, mode string) []rune {
+func get_shiftmap(key string, mode Mode) []rune {
 	// create a slice containing alphabetical diff from a
 	var shiftmap []rune
 	for _, char := range key {
@@ -77,7 +103,7 @@ func get_shiftmap(key string, mode string) []rune {
 			continue
 		}
 		shift := char - base[0] // should be 'a' or 'A'
-		if mode == "decode" {
+		if mode == Decode {
 			// add a negative number for decoding
 			shift = shift * -1
 		}
@@ -102,7 +128,7 @@ func populatebuff(rb RingBuffer) RingBuffer {
 	}
 }
 
-func apply_shift(input string, shiftmap []rune) []rune {
+func apply_shift(input string, shiftmap []rune) string {
 	var output []rune
 	var ulcase [MAXLEN]rune
 
@@ -131,5 +157,5 @@ func apply_shift(input string, shiftmap []rune) []rune {
 
 		output = append(output, outchar)
 	}
-	return output
+	return string(output)
 }
