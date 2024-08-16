@@ -2,7 +2,9 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 )
 
@@ -27,17 +29,33 @@ func main() {
 	var key string
 	var input string
 
-	if len(os.Args) == 4 {
+	// Create flag for file input
+	fileFlag := flag.String("f", "", "Path to the input text file")
+	flag.Parse()
+
+	if len(os.Args) == 5 && *fileFlag != "" {
+		inputText, err := ioutil.ReadFile(*fileFlag)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		// set varibles
+		modeArg = os.Args[3]
+		key = os.Args[4]
+		input = string(inputText)
+
+	} else if len(os.Args) == 4 {
 		modeArg = os.Args[1]
-		// TODO its better to read from a file than an arg with vigenere ciphers
-		// so input should be read from a file.
 		key = os.Args[2]
 		input = os.Args[3]
+
 	} else {
-		// default values
-		modeArg = "encode"
-		input = "Please enter 1 a mode 2 a key to apply 3 a string to shift either as arg or "
-		key = "a"
+		fmt.Println("Please follow useage:")
+		fmt.Println("vigenere [-f <filename>] <mode: [encode | decode]> <key> [input string]")
+		fmt.Println("either specify filename with -f (position matters)")
+		fmt.Println("or specify an input string inline as a command arg")
+		os.Exit(1)
 	}
 
 	// validate mode input
