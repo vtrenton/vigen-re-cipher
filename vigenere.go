@@ -24,21 +24,19 @@ const (
 func main() {
 	// arg vars
 	var modeArg string
-	var input string
 	var key string
+	var input string
 
 	if len(os.Args) == 4 {
-		// raw dogging it! taking stdin directly from args with no bounds checking
-		// hack me bro!
 		modeArg = os.Args[1]
 		// TODO its better to read from a file than an arg with vigenere ciphers
 		// so input should be read from a file.
-		input = os.Args[2]
-		key = os.Args[3]
+		key = os.Args[2]
+		input = os.Args[3]
 	} else {
 		// default values
 		modeArg = "encode"
-		input = "Please enter 1 a mode 2 string to shift and 3 a key to apply"
+		input = "Please enter 1 a mode 2 a key to apply 3 a string to shift either as arg or "
 		key = "a"
 	}
 
@@ -102,9 +100,9 @@ func get_shiftmap(key string, mode Mode) []rune {
 			// skip iteration
 			continue
 		}
-		shift := char - base[0] // should be 'a' or 'A'
+		shift := char - base[0]
 		if mode == Decode {
-			// add a negative number for decoding
+			// multiply a negative number for decoding
 			shift = shift * -1
 		}
 		shiftmap = append(shiftmap, shift)
