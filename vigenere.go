@@ -51,11 +51,10 @@ func main() {
 		input = os.Args[3]
 
 	} else {
-		fmt.Println("Please follow useage:")
 		fmt.Println("vigenere [-f <filename>] <mode: [encode | decode]> <key> [input string]")
 		fmt.Println("either specify filename with -f (position matters)")
 		fmt.Println("or specify an input string inline as a command arg")
-		os.Exit(1)
+		os.Exit(0)
 	}
 
 	// validate mode input
