@@ -8,20 +8,30 @@ import (
 	"os"
 )
 
-const MAXLEN int = 26
+// enum for mode Arg
+type Mode string
+
+const (
+	MAXLEN int  = 26
+	Encode Mode = "encode"
+	Decode Mode = "decode"
+)
 
 type RingBuffer struct {
 	lower [MAXLEN]rune
 	upper [MAXLEN]rune
 }
 
-// enum for mode Arg
-type Mode string
+// method
+func (rb *RingBuffer) populatebuff() {
+	for i := 0; i < MAXLEN; i++ {
+		rb.lower[i] = rune('a' + i)
+	}
 
-const (
-	Encode Mode = "encode"
-	Decode Mode = "decode"
-)
+	for i := 0; i < MAXLEN; i++ {
+		rb.upper[i] = rune('A' + i)
+	}
+}
 
 func main() {
 	// arg vars
@@ -88,7 +98,7 @@ func checkcase(input rune) [MAXLEN]rune {
 	// this struct is just 2 arrays (sequential so not a slice)
 	// minimal overhead
 	var rb RingBuffer
-	rb = populatebuff(rb)
+	rb.populatebuff()
 
 	if input >= 'a' && input <= 'z' {
 		// lowercase
@@ -125,22 +135,6 @@ func get_shiftmap(key string, mode Mode) []rune {
 		shiftmap = append(shiftmap, shift)
 	}
 	return shiftmap
-}
-
-// populate shift buffer
-func populatebuff(rb RingBuffer) RingBuffer {
-	for i := 0; i < MAXLEN; i++ {
-		rb.lower[i] = rune('a' + i)
-	}
-
-	for i := 0; i < MAXLEN; i++ {
-		rb.upper[i] = rune('A' + i)
-	}
-
-	return RingBuffer{
-		lower: rb.lower,
-		upper: rb.upper,
-	}
 }
 
 func apply_shift(input string, shiftmap []rune) string {
