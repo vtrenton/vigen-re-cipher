@@ -101,14 +101,12 @@ func checkcase(input rune) [MAXLEN]rune {
 	rb.populatebuff()
 
 	if input >= 'a' && input <= 'z' {
-		// lowercase
 		return rb.lower
 	} else if input >= 'A' && input <= 'Z' {
-		// uppercase
 		return rb.upper
 	} else {
-		// not a char
-		// populate with zeros to signal to upstream that
+		// If this is reached - the char is not a letter
+		// populate an array with zero to inform upstream
 		var notchar [MAXLEN]rune
 		for i := range MAXLEN {
 			notchar[i] = 0
