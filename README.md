@@ -1,0 +1,1 @@
+simple example of vinegere cipher using a ring buffer with upper and lower letters.
