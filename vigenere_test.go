@@ -60,3 +60,39 @@ func TestParseMode(t *testing.T) {
 	})
 
 }
+
+func TestCheckCase(t *testing.T) {
+	var rb RingBuffer
+	rb.populatebuff()
+
+	t.Run("validate return of lowercase buffer", func(t *testing.T) {
+		got, err := checkcase('i')
+		if err != nil {
+			t.Error(err)
+		}
+		want := rb.lower
+
+		if got != want {
+			t.Errorf("tested lowercase, got %v but wanted %v", got, want)
+		}
+	})
+
+	t.Run("test return of uppercase buffer", func(t *testing.T) {
+		got, err := checkcase('I')
+		if err != nil {
+			t.Error(err)
+		}
+		want := rb.upper
+
+		if got != want {
+			t.Errorf("tested uppercase, got %v but wanted %v", got, want)
+		}
+	})
+
+	t.Run("test sending something other than an alphbetical char", func(t *testing.T) {
+		_, err := checkcase('$')
+		if err == nil {
+			t.Error("expected an error but didnt get one")
+		}
+	})
+}
