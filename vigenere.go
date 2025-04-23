@@ -90,7 +90,7 @@ func ParseMode(mode string) (Mode, error) {
 	}
 }
 
-func checkcase(input rune) [MAXLEN]rune {
+func checkcase(input rune) ([MAXLEN]rune, error) {
 	// this is realistically the only function that needs access to the RingBuffer
 	// Lets initialize it here
 	// even though we'll be reinitializing on each call
@@ -100,17 +100,12 @@ func checkcase(input rune) [MAXLEN]rune {
 	rb.populatebuff()
 
 	if input >= 'a' && input <= 'z' {
-		return rb.lower
+		return rb.lower, nil
 	} else if input >= 'A' && input <= 'Z' {
-		return rb.upper
+		return rb.upper, nil
 	} else {
 		// If this is reached - the char is not a letter
-		// populate an array with zero to inform upstream
-		var notchar [MAXLEN]rune
-		for i := range MAXLEN {
-			notchar[i] = 0
-		}
-		return notchar
+		return [26]rune{}, errors.New("not a char")
 	}
 }
 
@@ -118,8 +113,8 @@ func get_shiftmap(key string, mode Mode) []rune {
 	// create a slice containing alphabetical diff from a
 	var shiftmap []rune
 	for _, char := range key {
-		base := checkcase(char)
-		if base[0] == 0 {
+		base, err := checkcase(char)
+		if err != nil {
 			// not a char
 			// skip iteration
 			continue
@@ -137,6 +132,7 @@ func get_shiftmap(key string, mode Mode) []rune {
 func apply_shift(input string, shiftmap []rune) string {
 	var output []rune
 	var ulcase [MAXLEN]rune
+	var err error
 
 	// need to create local varible to track index of shiftmaps
 	// external of loop iterator for string
@@ -146,8 +142,8 @@ func apply_shift(input string, shiftmap []rune) string {
 	for _, c := range input {
 		currkey := shiftmap[ind%len(shiftmap)]
 		ind++
-		ulcase = checkcase(c)
-		if ulcase[0] == 0 {
+		ulcase, err = checkcase(c)
+		if err != nil {
 			// Not a letter
 			output = append(output, c)
 			ind--
