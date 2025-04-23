@@ -26,3 +26,37 @@ func TestRingBuffPopulate(t *testing.T) {
 		}
 	})
 }
+
+func TestParseMode(t *testing.T) {
+	t.Run("test encode mode", func(t *testing.T) {
+		got, err := ParseMode("encode")
+		if err != nil {
+			t.Error(err)
+		}
+		want := Encode
+
+		if got != want {
+			t.Errorf("wanted %s, but got %s", got, want)
+		}
+	})
+
+	t.Run("test decode mode", func(t *testing.T) {
+		got, err := ParseMode("decode")
+		if err != nil {
+			t.Error(err)
+		}
+		want := Decode
+
+		if got != want {
+			t.Errorf("wanted %s, but got %s", got, want)
+		}
+	})
+
+	t.Run("bad string passed in", func(t *testing.T) {
+		_, err := ParseMode("bad")
+		if err == nil {
+			t.Error("expected error but didnt get one")
+		}
+	})
+
+}
