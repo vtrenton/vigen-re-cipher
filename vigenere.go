@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 )
 
@@ -44,7 +43,7 @@ func main() {
 	flag.Parse()
 
 	if len(os.Args) == 5 && *fileFlag != "" {
-		inputText, err := ioutil.ReadFile(*fileFlag)
+		inputText, err := os.ReadFile(*fileFlag)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
