@@ -110,7 +110,7 @@ func checkcase(input rune) ([MAXLEN]rune, error) {
 }
 
 func get_shiftmap(key string, mode Mode) []rune {
-	// create a slice containing alphabetical diff from a
+	// create a slice containing alphabetical diff from 'a'
 	var shiftmap []rune
 	for _, char := range key {
 		base, err := checkcase(char)

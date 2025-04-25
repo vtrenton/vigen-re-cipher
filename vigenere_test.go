@@ -1,6 +1,7 @@
 package main
 
 import (
+	"slices"
 	"testing"
 )
 
@@ -93,6 +94,19 @@ func TestCheckCase(t *testing.T) {
 		_, err := checkcase('$')
 		if err == nil {
 			t.Error("expected an error but didnt get one")
+		}
+	})
+}
+
+func TestGetShiftmap(t *testing.T) {
+	t.Run("validate encoding with a key", func(t *testing.T) {
+		key := "abcdefghijklmnopqrstuvwxyz"
+		mode := Encode
+
+		got := get_shiftmap(key, mode)
+		want := []rune{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25}
+		if !slices.Equal(got, want) {
+			t.Errorf("got %c but wanted %c", got, want)
 		}
 	})
 }
