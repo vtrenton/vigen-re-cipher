@@ -122,3 +122,12 @@ func TestGetShiftmap(t *testing.T) {
 
 	})
 }
+
+func TestApplyShift(t *testing.T) {
+	t.Run("apply the shift based on the key", func(t *testing.T) {
+		input := "abcabc"
+		mode := Encode
+		key := "abc"
+		shiftmap := get_shiftmap()
+	})
+}
