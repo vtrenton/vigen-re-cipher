@@ -109,4 +109,16 @@ func TestGetShiftmap(t *testing.T) {
 			t.Errorf("got %c but wanted %c", got, want)
 		}
 	})
+
+	t.Run("validate decoding with a key", func(t *testing.T) {
+		key := "abcdefghijklmnopqrstuvwxyz"
+		mode := Decode
+
+		got := get_shiftmap(key, mode)
+		want := []rune{0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -15, -16, -17, -18, -19, -20, -21, -22, -23, -24, -25}
+		if !slices.Equal(got, want) {
+			t.Errorf("got %c but wanted %c", got, want)
+		}
+
+	})
 }
