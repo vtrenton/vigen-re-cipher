@@ -124,14 +124,27 @@ func TestGetShiftmap(t *testing.T) {
 }
 
 func TestApplyShift(t *testing.T) {
-	t.Run("apply the shift based on the key", func(t *testing.T) {
-		input := "abcabc"
+	input := "abc abc"
+	key := "abc"
+
+	t.Run("apply the encode shift based on the key", func(t *testing.T) {
 		mode := Encode
-		key := "abc"
 		shiftmap := get_shiftmap(key, mode)
 
 		got := apply_shift(input, shiftmap)
-		want := "aceace"
+		want := "ace ace"
+
+		if got != want {
+			t.Errorf("got %s, but wanted %s", got, want)
+		}
+	})
+
+	t.Run("apply the decode shift based on the key", func(t *testing.T) {
+		mode := Decode
+		shiftmap := get_shiftmap(key, mode)
+
+		got := apply_shift(input, shiftmap)
+		want := "aaa aaa"
 
 		if got != want {
 			t.Errorf("got %s, but wanted %s", got, want)
