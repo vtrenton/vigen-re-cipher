@@ -128,6 +128,13 @@ func TestApplyShift(t *testing.T) {
 		input := "abcabc"
 		mode := Encode
 		key := "abc"
-		shiftmap := get_shiftmap()
+		shiftmap := get_shiftmap(key, mode)
+
+		got := apply_shift(input, shiftmap)
+		want := "aceace"
+
+		if got != want {
+			t.Errorf("got %s, but wanted %s", got, want)
+		}
 	})
 }
