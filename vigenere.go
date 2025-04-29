@@ -33,6 +33,23 @@ func (rb *RingBuffer) populatebuff() {
 }
 
 func main() {
+
+	modeArg, key, input := getArgs()
+
+	// validate mode input
+	mode, err := ParseMode(modeArg)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	shiftmap := get_shiftmap(key, mode)
+	cipher_out := apply_shift(input, shiftmap)
+
+	fmt.Println(cipher_out)
+}
+
+func getArgs() (string, string, string) {
 	// arg vars
 	var modeArg string
 	var key string
@@ -66,28 +83,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	// validate mode input
-	mode, err := ParseMode(modeArg)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	shiftmap := get_shiftmap(key, mode)
-	cipher_out := apply_shift(input, shiftmap)
-
-	fmt.Println(cipher_out)
-}
-
-func ParseMode(mode string) (Mode, error) {
-	switch mode {
-	case string(Encode):
-		return Encode, nil
-	case string(Decode):
-		return Decode, nil
-	default:
-		return "", errors.New("invalid mode: must be 'encode' or 'decode'")
-	}
+	return modeArg, key, input
 }
 
 func checkcase(input rune) ([MAXLEN]rune, error) {
@@ -106,6 +102,16 @@ func checkcase(input rune) ([MAXLEN]rune, error) {
 	} else {
 		// If this is reached - the char is not a letter
 		return [26]rune{}, errors.New("not a char")
+	}
+}
+func ParseMode(mode string) (Mode, error) {
+	switch mode {
+	case string(Encode):
+		return Encode, nil
+	case string(Decode):
+		return Decode, nil
+	default:
+		return "", errors.New("invalid mode: must be 'encode' or 'decode'")
 	}
 }
 
