@@ -34,7 +34,10 @@ func (rb *RingBuffer) populatebuff() {
 
 func main() {
 
-	modeArg, key, input := getArgs()
+	modeArg, key, input, err := getArgs()
+	if err != nil {
+		fmt.Errorf(err)
+	}
 
 	// validate mode input
 	mode, err := ParseMode(modeArg)
@@ -49,7 +52,7 @@ func main() {
 	fmt.Println(cipher_out)
 }
 
-func getArgs() (string, string, string) {
+func getArgs() (string, string, string, error) {
 	// arg vars
 	var modeArg string
 	var key string
@@ -83,7 +86,7 @@ func getArgs() (string, string, string) {
 		os.Exit(0)
 	}
 
-	return modeArg, key, input
+	return modeArg, key, input, nil
 }
 
 func checkcase(input rune) ([MAXLEN]rune, error) {
@@ -104,6 +107,7 @@ func checkcase(input rune) ([MAXLEN]rune, error) {
 		return [26]rune{}, errors.New("not a char")
 	}
 }
+
 func ParseMode(mode string) (Mode, error) {
 	switch mode {
 	case string(Encode):

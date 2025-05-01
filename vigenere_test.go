@@ -5,7 +5,16 @@ import (
 	"testing"
 )
 
-func TestRingBuffPopulate(t *testing.T) {
+func TestGetArgs(t *testing.T) {
+	t.Run("test empty args" func(){
+		os.Args = []string{"", "", ""}
+
+		modeArg, key, input := getArgs()
+		
+	})
+}
+
+func TestCheckCase(t *testing.T) {
 	var rb RingBuffer
 	rb.populatebuff()
 
@@ -37,7 +46,7 @@ func TestParseMode(t *testing.T) {
 		want := Encode
 
 		if got != want {
-			t.Errorf("wanted %s, but got %s", got, want)
+t.Errorf("wanted %s, but got %s", got, want)
 		}
 	})
 
