@@ -6,15 +6,17 @@ import (
 )
 
 func TestGetArgs(t *testing.T) {
-	t.Run("test empty args" func(){
-		os.Args = []string{"", "", ""}
+	t.Run("test empty args", func(t *testing.T){
+		//args := []string{"", "", ""}
 
-		modeArg, key, input := getArgs()
-		
+		//modeArg, key, input, err := getArgs(args)
+		//if err != nil {
+		//	t.Errorf(err)
+		//}
 	})
 }
 
-func TestCheckCase(t *testing.T) {
+func TestPopulate(t *testing.T) {
 	var rb RingBuffer
 	rb.populatebuff()
 

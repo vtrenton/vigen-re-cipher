@@ -33,10 +33,10 @@ func (rb *RingBuffer) populatebuff() {
 }
 
 func main() {
-
-	modeArg, key, input, err := getArgs()
+	modeArg, key, input, err := getArgs(os.Args)
 	if err != nil {
-		fmt.Errorf(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	// validate mode input
@@ -52,7 +52,7 @@ func main() {
 	fmt.Println(cipher_out)
 }
 
-func getArgs() (string, string, string, error) {
+func getArgs(args []string) (string, string, string, error) {
 	// arg vars
 	var modeArg string
 	var key string
@@ -65,19 +65,18 @@ func getArgs() (string, string, string, error) {
 	if len(os.Args) == 5 && *fileFlag != "" {
 		inputText, err := os.ReadFile(*fileFlag)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return "", "", "", err
 		}
 
 		// set varibles
-		modeArg = os.Args[3]
-		key = os.Args[4]
+		modeArg = args[3]
+		key = args[4]
 		input = string(inputText)
 
-	} else if len(os.Args) == 4 {
-		modeArg = os.Args[1]
-		key = os.Args[2]
-		input = os.Args[3]
+	} else if len(args) == 4 {
+		modeArg = args[1]
+		key = args[2]
+		input = args[3]
 
 	} else {
 		fmt.Println("vigenere [-f <filename>] <mode: [encode | decode]> <key> [input string]")
