@@ -79,10 +79,8 @@ func getArgs(args []string) (string, string, string, error) {
 		input = args[3]
 
 	} else {
-		fmt.Println("vigenere [-f <filename>] <mode: [encode | decode]> <key> [input string]")
-		fmt.Println("either specify filename with -f (position matters)")
-		fmt.Println("or specify an input string inline as a command arg")
-		os.Exit(0)
+		err := fmt.Errorf("vigenere [-f <filename>] <mode: [encode | decode]> <key> [input string]\neither specify filename with -f (position matters)\nor specify an input string inline as a command arg")
+		return "", "", "", err
 	}
 
 	return modeArg, key, input, nil

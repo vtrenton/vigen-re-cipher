@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetArgs(t *testing.T) {
-	t.Run("test empty args", func(t *testing.T){
+	t.Run("test empty args", func(t *testing.T) {
 		//args := []string{"", "", ""}
 
 		//modeArg, key, input, err := getArgs(args)
@@ -48,7 +48,7 @@ func TestParseMode(t *testing.T) {
 		want := Encode
 
 		if got != want {
-t.Errorf("wanted %s, but got %s", got, want)
+			t.Errorf("wanted %s, but got %s", got, want)
 		}
 	})
 
