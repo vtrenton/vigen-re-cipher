@@ -7,12 +7,13 @@ import (
 
 func TestGetArgs(t *testing.T) {
 	t.Run("test empty args", func(t *testing.T) {
-		//args := []string{"", "", ""}
+		args := []string{"", "", ""}
 
-		//modeArg, key, input, err := getArgs(args)
-		//if err != nil {
-		//	t.Errorf(err)
-		//}
+		_, _, _, err := getArgs(args)
+
+		if err == nil {
+			t.Error("expected error but didn't get one")
+		}
 	})
 }
 
