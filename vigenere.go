@@ -16,19 +16,19 @@ const (
 	Decode Mode = "decode"
 )
 
-type RingBuffer struct {
+type CharSet struct {
 	lower [MAXLEN]rune
 	upper [MAXLEN]rune
 }
 
 // method
-func (rb *RingBuffer) populatebuff() {
+func (cs *CharSet) populatebuff() {
 	for i := 0; i < MAXLEN; i++ {
-		rb.lower[i] = rune('a' + i)
+		cs.lower[i] = rune('a' + i)
 	}
 
 	for i := 0; i < MAXLEN; i++ {
-		rb.upper[i] = rune('A' + i)
+		cs.upper[i] = rune('A' + i)
 	}
 }
 
@@ -87,18 +87,18 @@ func getArgs(args []string) (string, string, string, error) {
 }
 
 func checkcase(input rune) ([MAXLEN]rune, error) {
-	// this is realistically the only function that needs access to the RingBuffer
+	// this is realistically the only function that needs access to the CharSet
 	// Lets initialize it here
 	// even though we'll be reinitializing on each call
 	// this struct is just 2 arrays (sequential so not a slice)
 	// minimal overhead
-	var rb RingBuffer
-	rb.populatebuff()
+	var cs CharSet
+	cs.populatebuff()
 
 	if input >= 'a' && input <= 'z' {
-		return rb.lower, nil
+		return cs.lower, nil
 	} else if input >= 'A' && input <= 'Z' {
-		return rb.upper, nil
+		return cs.upper, nil
 	} else {
 		// If this is reached - the char is not a letter
 		return [26]rune{}, errors.New("not a char")
